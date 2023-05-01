@@ -6,6 +6,8 @@ from flask import Flask, render_template
 from models import storage
 from models.state import State
 from models.amenity import Amenity
+from models.place import Place
+from models.user import User
 import uuid
 
 app = Flask(__name__)
@@ -17,6 +19,8 @@ def filters():
     context = {
             'states': storage.all(State).values(),
             'amenities': storage.all(Amenity).values(),
+            'places': storage.all(Place).values(),
+            'users': storage.all(User),
             'cache_id': uuid.uuid4()
             }
     return render_template("0-hbnb.html", **context)
