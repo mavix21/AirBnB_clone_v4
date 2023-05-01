@@ -1,0 +1,111 @@
+#!/usr/bin/python3
+"""
+Contains the class DBStorage
+"""
+
+from models.amenity import Amenity
+from models.base_model import Base
+from models.city import City
+from models.place import Place
+from models.review import Review
+from models.state import State
+from models.user import User
+from os import getenv
+from sqlalchemy import create_engine
+from sqlalchemy.orm import scoped_session, sessionmaker
+
+classes = {"Amenity": Amenity, "City": City,
+           "Place": Place, "Review": Review, "State": State, "User": User}
+
+
+class DBStorage:
+    """interaacts with the MySQL database"""
+    __engine = None
+    __session = None
+
+    def __init__(self):
+        """Instantiate a DBStorage object"""
+        HBNB_MYSQL_USER = getenv('HBNB_MYSQL_USER')
+        HBNB_MYSQL_PWD = getenv('HBNB_MYSQL_PWD')
+        HBNB_MYSQL_HOST = getenv('HBNB_MYSQL_HOST')
+        HBNB_MYSQL_DB = getenv('HBNB_MYSQL_DB')
+        HBNB_ENV = getenv('HBNB_ENV')
+        self.__engine = create_engine('mysql+mysqldb://{}:{}@{}/{}'.
+                                      format(HBNB_MYSQL_USER,
+                                             HBNB_MYSQL_PWD,
+                                             HBNB_MYSQL_HOST,
+                                             HBNB_MYSQL_DB))
+        if HBNB_ENV == "test":
+            Base.metadata.drop_all(self.__engine)
+
+    def all(self, cls=None):
+        """query on the current database session"""
+        new_dict = {}
+        for clss in classes:
+            if cls is None or cls is classes[clss] or cls is clss:
+                objs = self.__session.query(classes[clss]).all()
+                for obj in objs:
+                    key = obj.__class__.__name__ + '.' + obj.id
+                    new_dict[key] = obj
+        return (new_dict)
+
+    def new(self, obj):
+        """add the object to the current database session"""
+        self.__session.add(obj)
+
+    def save(self):
+        """commit all changes of the current database session"""
+        if not self.__session:
+            print("No session established")
+            return
+
+        try:
+            self.__session.commit()
+        except Exception as e:
+            msg_0 = str(e).partition('\n')[0]
+            print(msg_0 if msg_0 else str(e))
+            self.__session.rollback()
+            raise e
+
+
+    def get(self, cls, id):
+        """retrieves an object of class @cls and @id"""
+        if cls not in classes.values():
+            print("Class does not exist.")
+            return None
+
+        if not isinstance(id, str):
+            print("id attribute must be a string.")
+            return None
+
+        searched_key = f"{cls.__name__}.{id}"
+        all_cls_objs = self.all(cls)
+        if searched_key not in all_cls_objs:
+            # print(f"{cls.__name__} with id of {id} not found.")
+            return None
+
+        return all_cls_objs[searched_key]
+
+    def count(self, cls=None):
+        """retrieves an object of class @cls and @id"""
+        if cls and cls not in classes.values():
+            print("Class does not exist.")
+            return
+
+        return len(self.all(cls) if cls else self.all())
+
+    def delete(self, obj=None):
+        """delete from the current database session obj if not None"""
+        if obj is not None:
+            self.__session.delete(obj)
+
+    def reload(self):
+        """reloads data from the database"""
+        Base.metadata.create_all(self.__engine)
+        sess_factory = sessionmaker(bind=self.__engine, expire_on_commit=False)
+        Session = scoped_session(sess_factory)
+        self.__session = Session
+
+    def close(self):
+        """call remove() method on the private session attribute"""
+        self.__session.remove()
