@@ -1,0 +1,106 @@
+<!DOCTYPE html>
+<html lang="en">
+	<head>
+		<link rel="shortcut icon" href="../static/images/icon.ico" >
+		<link rel="stylesheet" href="../static/styles/4-common.css?{{ cache_id }}"/>
+		<link rel="stylesheet" href="../static/styles/3-header.css?{{ cache_id }}"/>
+		<link rel="stylesheet" href="../static/styles/3-footer.css?{{ cache_id }}"/>
+		<link rel="stylesheet" href="../static/styles/6-filters.css?{{ cache_id }}"/>
+		<link rel="stylesheet" href="../static/styles/8-places.css?{{ cache_id }}"/>
+		<link rel="icon" href="../static/images/icon.png">
+		<title>HBNB</title>
+		<script src="https://code.jquery.com/jquery-3.2.1.min.js"></script>
+		<script src="../static/scripts/1-hbnb.js?{{ cache_id }}"></script>
+	</head>
+		<body>
+			<header>
+				<div class="logo"></div>
+			</header>
+			<main class="container">
+				<section class="filters">
+					<div class="locations">
+						<div class="filters-tab">
+							<h3>States</h3>
+							<h4>&nbsp;</h4>
+						</div>
+						<ul class="popover locations-list">
+							{% for state in states %}
+							<li class="list_item-states">
+								<h2 class="popover-heading">{{ state.name }}</h2>
+								<ul>
+									{% for city in state.cities %}
+									<li><h4>{{ city.name }}</h4></li>
+									{% endfor %}
+								</ul>
+							</li>
+							{% endfor %}
+						</ul>
+					</div>
+					<div class="amenities">
+						<div class="filters-tab">
+							<h3>Amenities</h3>
+							<h4>&nbsp;</h4>
+						</div>
+						<ul class="popover amenities-list">
+							{% for amenity in amenities %}
+							<li>
+								<label class="form-control">
+									<input type="checkbox" 
+                         data-id="{{ amenity.id }}"
+                         data-name="{{ amenity.name }}">
+									<span class="amenity_name">{{ amenity.name }}</span>
+								</label>
+							</li>
+							{% endfor %}
+						</ul>
+					</div>
+					<button type="button">Search</button>
+				</section>
+				<section class="places">
+					<h1>Places</h1>
+					{% for place in places %}
+					<div class="places-container">
+						<article class="place">
+							<div class="place-header">
+								<h2 class="place-name">{{ place.name }}</h2>
+								<div class="price_by_night">
+									<p>
+									${{ place.price_by_night }}
+									</p>
+								</div>
+							</div>
+							<div class="information">
+								<div class="info max_guest">
+									<div class="icon icon-guest"></div>
+									<p>{{ place.max_guest }} Guests</p>
+								</div>
+								<div class="info number_of_rooms">
+									<div class="icon icon-bed"></div>
+									<p>{{ place.number_rooms }} Bedroom</p>
+								</div>
+								<div class="info number_of_bathrooms">
+									<div class="icon icon-bath"></div>
+									<p>{{ place.number_bathrooms }} Bathroom</p>
+								</div>
+							</div>
+							<div class="description-container">
+								<div class="user">
+									<p>
+									<span>Owner</span>
+									: {{ users['User.' + place.user_id].first_name + ' ' + users['User.' + place.user_id].last_name}}
+									</p>
+								</div>
+								<div class="description">
+									{{ place.description|safe }}
+								</div>
+							</div>
+						</article>
+					</div>
+					{% endfor %}
+				</section>
+			</main>
+			<footer>
+				<p>Holberton School</p>
+			</footer>
+		</body>
+</html>
