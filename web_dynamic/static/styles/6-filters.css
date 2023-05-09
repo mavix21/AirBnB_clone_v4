@@ -154,8 +154,8 @@ input[type="checkbox"]:focus {
 }
 
 
-.form-control h4 {
-	padding: 4px 0;
+.amenity_name {
+	padding: 2.5px 0;
 }
 
 .form-control + .form-control {
