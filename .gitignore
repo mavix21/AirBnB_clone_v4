@@ -5,3 +5,6 @@
 *.pyc
 *.pyo
 *.pyd
+
+.eslintrc.js
+setenv.sh
