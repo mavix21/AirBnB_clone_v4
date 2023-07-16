@@ -4,6 +4,7 @@
 import cmd
 from datetime import datetime
 import models
+
 from models.amenity import Amenity
 from models.base_model import BaseModel
 from models.city import City
@@ -61,6 +62,7 @@ class HBNBCommand(cmd.Cmd):
         if len(args) == 0:
             print("** class name missing **")
             return False
+
         if args[0] in classes:
             new_dict = self._key_value_parser(args[1:])
             instance = classes[args[0]](**new_dict)
@@ -164,6 +166,7 @@ class HBNBCommand(cmd.Cmd):
                 print("** instance id missing **")
         else:
             print("** class doesn't exist **")
+
 
 if __name__ == '__main__':
     HBNBCommand().cmdloop()
